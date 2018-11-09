@@ -12,9 +12,6 @@ const addMember = (newKey, newVal) => dico =>
 const getLength = (array, acc = 0) =>
   array(() => next => getLength(next, acc + 1), () => acc);
 
-const addToArray = newMember => array =>
-  addMember(getLargerIndex(array) + 1, newMember)(array);
-
 const deleteByKey = key => dico =>
   dico(
     (currKey, val) => next =>
@@ -66,6 +63,9 @@ const getLargerIndex = (array, prevIndex = -1) =>
     () => prevIndex
   );
 
+const addToArray = newMember => array =>
+  addMember(getLargerIndex(array) + 1, newMember)(array);
+
 const deleteByIndex = index => array => deleteByKey(index)(array);
 
 const reverse = (array, length = getLength(array)) =>
@@ -75,33 +75,41 @@ const reverse = (array, length = getLength(array)) =>
     _ => fDictionnary
   );
 
+const concat = array1 => array2 =>
+  array2(
+    (index, val) => next => concat(addToArray(val)(array1))(next),
+    _ => array1
+  );
+
 // test
 
-let newDico = dictionnary(2, "coucou")(dictionnary(1, "salut")(fDictionnary));
+// let newDico = dictionnary(2, "coucou")(dictionnary(1, "salut")(fDictionnary));
 
-newDico = addMember(0, "yo")(newDico);
-newDico = addMember(3, "yo")(newDico);
-newDico = addMember(4, "yo")(newDico);
+// newDico = addMember(0, "yo")(newDico);
+// newDico = addMember(3, "yo")(newDico);
+// newDico = addMember(4, "yo")(newDico);
 
-foreach(newDico, (key, val) => console.log(key, val));
+// foreach(newDico, (key, val) => console.log(key, val));
 
-// let array = createSimpleArray(0, x => x);
+// // let array = createSimpleArray(0, x => x);
 
-console.log(`\n${getLength(newDico)}\n`);
+// console.log(`\n${getLength(newDico)}\n`);
 
-newDico = reverse(newDico);
+// newDico = reverse(newDico);
 
-foreach(newDico, (key, val) => console.log(key, val));
+// foreach(newDico, (key, val) => console.log(key, val));
 
-console.log("\ntrue ?", hasValue("coucou")(newDico));
-console.log("false ?", hasValue("yo les gens")(newDico));
+// console.log("\ntrue ?", hasValue("coucou")(newDico));
+// console.log("false ?", hasValue("yo les gens")(newDico));
 
-console.log("\ncount", count("yo")(newDico));
+// console.log("\ncount", count("yo")(newDico));
 
 // console.log("\n");
 
 // array = addToArray("new element")(array);
 
-// let array = createFullArray("valeur0")("salut")("ca va ?")("hey")();
+let array = createFullArray("valeur0")("salut")("ca va ?")("hey")();
 
-// foreach(array, (key, val) => console.log(key, val));
+array = concat(array)(array);
+
+foreach(array, (key, val) => console.log(key, val));
