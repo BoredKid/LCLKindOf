@@ -3,83 +3,88 @@ const dictionnary = (key, val) => next => f => f(key, val)(next);
 const fDictionnary = (_, fn) => fn();
 
 const addMember = (newKey, newVal) => dico =>
-  dico(
-    (key, val) => next =>
-      dictionnary(key, val)(addMember(newKey, newVal)(next)),
-    () => dictionnary(newKey, newVal)(fDictionnary)
-  );
+    dico(
+        (key, val) => next =>
+        dictionnary(key, val)(addMember(newKey, newVal)(next)),
+        () => dictionnary(newKey, newVal)(fDictionnary)
+    );
 
 const getLength = (array, acc = 0) =>
-  array(() => next => getLength(next, acc + 1), () => acc);
+    array(() => next => getLength(next, acc + 1), () => acc);
 
 const deleteByKey = key => dico =>
-  dico(
-    (currKey, val) => next =>
-      key !== currKey
-        ? dictionnary(currKey, val)(deleteByKey(key)(next))
-        : next,
-    _ => fDictionnary
-  );
+    dico(
+        (currKey, val) => next =>
+        key !== currKey ?
+        dictionnary(currKey, val)(deleteByKey(key)(next)) :
+        next,
+        _ => fDictionnary
+    );
 
 const foreach = (seq, fn) =>
-  seq((key, val) => next => foreach(next, fn, fn(key, val)), _ => _);
+    seq((key, val) => next => foreach(next, fn, fn(key, val)), _ => _);
 
 const map = (seq, fn) =>
-  seq(
-    (key, val) => next => dictionnary(key, fn(val))(map(next, fn)),
-    _ => fDictionnary
-  );
+    seq(
+        (key, val) => next => dictionnary(key, fn(val))(map(next, fn)),
+        _ => fDictionnary
+    );
 
 const hasValue = val => dico =>
-  dico(
-    (key, currVal) => next => (val === currVal ? true : hasValue(val)(next)),
-    _ => false
-  );
+    dico(
+        (key, currVal) => next => (val === currVal ? true : hasValue(val)(next)),
+        _ => false
+    );
 
 const count = val => dico =>
-  dico(
-    (key, currVal) => next => (currVal === val ? 1 : 0) + count(val)(next),
-    _ => 0
-  );
+    dico(
+        (key, currVal) => next => (currVal === val ? 1 : 0) + count(val)(next),
+        _ => 0
+    );
 
 // Array
 const createSimpleArray = (n, fn = x => 0, acc = fDictionnary) =>
-  n > 0
-    ? createSimpleArray(n - 1, fn, dictionnary(n - 1, fn(n - 1))(acc))
-    : acc;
+    n > 0 ?
+    createSimpleArray(n - 1, fn, dictionnary(n - 1, fn(n - 1))(acc)) :
+    acc;
 
 const createFullArrayFromAcc = acc => val =>
-  val ? createFullArrayFromAcc(addToArray(val)(acc)) : acc;
+    val ? createFullArrayFromAcc(addToArray(val)(acc)) : acc;
 
 const createFullArray = val => createFullArrayFromAcc(fDictionnary)(val);
 
 const getLastIndex = (array, prevIndex = -1) =>
-  array((index, val) => next => getLastIndex(next, index), () => prevIndex);
+    array((index, val) => next => getLastIndex(next, index), () => prevIndex);
 
 const getLargerIndex = (array, prevIndex = -1) =>
-  array(
-    (index, val) => next =>
-      getLargerIndex(next, prevIndex > index ? prevIndex : index),
-    () => prevIndex
-  );
+    array(
+        (index, val) => next =>
+        getLargerIndex(next, prevIndex > index ? prevIndex : index),
+        () => prevIndex
+    );
 
 const addToArray = newMember => array =>
-  addMember(getLargerIndex(array) + 1, newMember)(array);
+    addMember(getLargerIndex(array) + 1, newMember)(array);
 
 const deleteByIndex = index => array => deleteByKey(index)(array);
 
 const reverse = (array, length = getLength(array)) =>
-  array(
-    (index, val) => next =>
-      dictionnary(length - 1 - index, val)(reverse(next, length)),
-    _ => fDictionnary
-  );
+    array(
+        (index, val) => next =>
+        dictionnary(length - 1 - index, val)(reverse(next, length)),
+        _ => fDictionnary
+    );
 
 const concat = array1 => array2 =>
-  array2(
-    (index, val) => next => concat(addToArray(val)(array1))(next),
-    _ => array1
-  );
+    array2(
+        (index, val) => next => concat(addToArray(val)(array1))(next),
+        _ => array1
+    );
+
+const reduce = array => (fn, acc) =>
+    array((index, val) => next => reduce(next)(fn, fn(acc, val)), _ => acc);
+
+const affectAtIndex = index => value => array => addMember(index, value)(deleteByIndex(index)(array));
 
 // test
 
@@ -108,8 +113,14 @@ const concat = array1 => array2 =>
 
 // array = addToArray("new element")(array);
 
-let array = createFullArray("valeur0")("salut")("ca va ?")("hey")();
+let array = createFullArray(1)(2)(3)(5)();
 
-array = concat(array)(array);
+array = affectAtIndex(2)(300)(array);
+
+// array = affectAtIndex(4, 2)(array);
 
 foreach(array, (key, val) => console.log(key, val));
+
+let sumOfArray = reduce(array)((a, b) => a + b, 0);
+
+console.log(sumOfArray);
