@@ -1,6 +1,6 @@
 const bool = a => b => f => f(a)(b);
-const T = a => b => a;
-const F = a => b => b;
+const T = a => () => a;
+const F = () => b => b;
 
 const and = exp1 => exp2 => exp1(exp2)(exp1);
 const or = exp1 => exp2 => exp1(exp1)(exp2);

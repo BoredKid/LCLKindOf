@@ -1,0 +1,24 @@
+{
+  "name": "lclkindof",
+  "version": "1.0.0",
+  "description": "An attempt at recreating some core functions using lambda calculus",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BoredKid/LCLKindOf.git"
+  },
+  "author": "Cissé KANE",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BoredKid/LCLKindOf/issues"
+  },
+  "homepage": "https://github.com/BoredKid/LCLKindOf#readme",
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
