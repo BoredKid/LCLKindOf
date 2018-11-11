@@ -53,13 +53,20 @@ const createFullArrayFromAcc = acc => val =>
 
 const createFullArray = val => createFullArrayFromAcc(fDictionnary)(val);
 
-const getLastIndex = (array, prevIndex = -1) =>
-    array((index, val) => next => getLastIndex(next, index), () => prevIndex);
+// const getLastIndex = (array, prevIndex = -1) =>
+//     array((index, val) => next => getLastIndex(next, index), () => prevIndex);
 
 const getLargerIndex = (array, prevIndex = -1) =>
     array(
         (index, val) => next =>
         getLargerIndex(next, prevIndex > index ? prevIndex : index),
+        () => prevIndex
+    );
+
+const getLowerIndex = (array, prevIndex = -1) =>
+    array(
+        (index, val) => next =>
+        getLowerIndex(next, prevIndex < index && prevIndex >= 0 ? prevIndex : index),
         () => prevIndex
     );
 
@@ -84,43 +91,33 @@ const concat = array1 => array2 =>
 const reduce = array => (fn, acc) =>
     array((index, val) => next => reduce(next)(fn, fn(acc, val)), _ => acc);
 
+const reduceRight = array => (fn, acc) =>
+    reduce(reverse(array))(fn, acc);
+
+const deleteNthLastElements = num => array =>
+    num > 0 ? deleteNthLastElements(num - 1)(deleteByIndex(getLargerIndex(array))(array)) : array;
+
+const deleteNthFirstElements = num => array =>
+    reverse(deleteNthLastElements(num)(reverse(array)));
+
+const makeSubArray = array => (firstIndex = 0, lastIndex = getLargerIndex(array)) =>
+    deleteNthFirstElements(firstIndex - getLowerIndex(array))(deleteNthLastElements(getLargerIndex(array) - lastIndex)(array));
+
 const affectAtIndex = index => value => array => addMember(index, value)(deleteByIndex(index)(array));
 
 // test
 
-// let newDico = dictionnary(2, "coucou")(dictionnary(1, "salut")(fDictionnary));
 
-// newDico = addMember(0, "yo")(newDico);
-// newDico = addMember(3, "yo")(newDico);
-// newDico = addMember(4, "yo")(newDico);
+let array1 = createFullArray(1)(2)(3)(5)(4)(7)(10)(20)(1)(1)(2)();
 
-// foreach(newDico, (key, val) => console.log(key, val));
+// array = affectAtIndex(2)(300)(array);
 
-// // let array = createSimpleArray(0, x => x);
+foreach(array1, (key, val) => console.log(key, val));
 
-// console.log(`\n${getLength(newDico)}\n`);
+console.log('\n\n');
 
-// newDico = reverse(newDico);
+//array1 = deleteNthFirstElements(3)(array1);
 
-// foreach(newDico, (key, val) => console.log(key, val));
+let array2 = makeSubArray(array1)(1, 3);
 
-// console.log("\ntrue ?", hasValue("coucou")(newDico));
-// console.log("false ?", hasValue("yo les gens")(newDico));
-
-// console.log("\ncount", count("yo")(newDico));
-
-// console.log("\n");
-
-// array = addToArray("new element")(array);
-
-let array = createFullArray(1)(2)(3)(5)();
-
-array = affectAtIndex(2)(300)(array);
-
-// array = affectAtIndex(4, 2)(array);
-
-foreach(array, (key, val) => console.log(key, val));
-
-let sumOfArray = reduce(array)((a, b) => a + b, 0);
-
-console.log(sumOfArray);
+foreach(array2, (key, val) => console.log(key, val));
