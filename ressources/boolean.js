@@ -1,4 +1,6 @@
-const bool = a => b => f => f(a)(b);
+const { pair } = require('./pair');
+
+const bool = pair;
 const T = a => () => a;
 const F = () => b => b;
 

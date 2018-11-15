@@ -13,14 +13,23 @@ const foreach = (seq, fn) => seq(val => next => foreach(next, fn, fn(val)), fn);
 const map = (seq, fn) => seq(val => next => pair(fn(val))(map(next, fn)), val => fPair(fn(val)));
 
 const addMember = (seq, newMember) => seq(
-  val => next => pair(val)(addMember(next, newMember)),
-  val => pair(val)(fPair(newMember)),
-);
+    val => next => pair(val)(addMember(next, newMember)),
+    val => pair(val)(fPair(newMember)),
+  );
 
 const reverse = seq => seq(val => next => addMember(reverse(next), val), val => fPair(val));
 
 // for testing purpose
-const jsPairToArray = pairToConvert => pairToConvert(
-  val => next => [val, ...jsPairToArray(next)],
-  val => [val],
-);
+const jsPairToArray = pairToConvert => pairToConvert(val => next => [val, ...jsPairToArray(next)], val => [val]);
+
+module.exports = {
+  pair,
+  fPair,
+  isPair,
+  range,
+  foreach,
+  map,
+  addMember,
+  reverse,
+  jsPairToArray,
+};
