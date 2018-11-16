@@ -1,5 +1,9 @@
+const { K, KI } = require('./utils');
 // pair
 const pair = val => next => f => f(val)(next);
+
+const first = p => p(K);
+const second = p => p(KI);
 
 const fPair = val => (_, fn) => fn(val);
 
@@ -13,9 +17,9 @@ const foreach = (seq, fn) => seq(val => next => foreach(next, fn, fn(val)), fn);
 const map = (seq, fn) => seq(val => next => pair(fn(val))(map(next, fn)), val => fPair(fn(val)));
 
 const addMember = (seq, newMember) => seq(
-    val => next => pair(val)(addMember(next, newMember)),
-    val => pair(val)(fPair(newMember)),
-  );
+  val => next => pair(val)(addMember(next, newMember)),
+  val => pair(val)(fPair(newMember)),
+);
 
 const reverse = seq => seq(val => next => addMember(reverse(next), val), val => fPair(val));
 
@@ -24,6 +28,8 @@ const jsPairToArray = pairToConvert => pairToConvert(val => next => [val, ...jsP
 
 module.exports = {
   pair,
+  first,
+  second,
   fPair,
   isPair,
   range,

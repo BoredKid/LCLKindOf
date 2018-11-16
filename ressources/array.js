@@ -6,9 +6,9 @@ const createSimpleArray = (n, fn = () => 0, acc = dico.fDictionnary) => (n > 0
     : acc);
 
 const getLargerIndex = (array, prevIndex = -1) => array(
-    index => next => getLargerIndex(next, prevIndex > index ? prevIndex : index),
-    () => prevIndex,
-  );
+  index => next => getLargerIndex(next, prevIndex > index ? prevIndex : index),
+  () => prevIndex,
+);
 
 const addToArray = newMember => array => dico.addMember(getLargerIndex(array) + 1, newMember)(array);
 
@@ -20,24 +20,24 @@ const createFullArray = val => createFullArrayFromAcc(dico.fDictionnary)(val);
 //     array((index, val) => next => getLastIndex(next, index), () => prevIndex);
 
 const getLowerIndex = (array, prevIndex = -1) => array(
-    index => next => getLowerIndex(
-        next,
-        prevIndex < index && prevIndex >= 0 ? prevIndex : index,
-      ),
-    () => prevIndex,
-  );
+  index => next => getLowerIndex(
+    next,
+    prevIndex < index && prevIndex >= 0 ? prevIndex : index,
+  ),
+  () => prevIndex,
+);
 
 const deleteByIndex = index => array => dico.deleteByKey(index)(array);
 
 const reverse = (array, length = dico.getLength(array)) => array(
-    (index, val) => next => dico.dictionnary(length - 1 - index, val)(reverse(next, length)),
-    () => dico.fDictionnary,
-  );
+  (index, val) => next => dico.dictionnary(length - 1 - index, val)(reverse(next, length)),
+  () => dico.fDictionnary,
+);
 
 const concat = array1 => array2 => array2(
-    (_, val) => next => concat(addToArray(val)(array1))(next),
-    () => array1,
-  );
+  (_, val) => next => concat(addToArray(val)(array1))(next),
+  () => array1,
+);
 
 const reduce = array => (fn, acc) => array((_, val) => next => reduce(next)(fn, fn(acc, val)), () => acc);
 
@@ -45,8 +45,8 @@ const reduceRight = array => (fn, acc) => reduce(reverse(array))(fn, acc);
 
 const deleteNthLastElements = num => array => (num > 0
     ? deleteNthLastElements(num - 1)(
-        deleteByIndex(getLargerIndex(array))(array)
-      )
+    deleteByIndex(getLargerIndex(array))(array),
+  )
     : array);
 
 const deleteNthFirstElements = num => array => reverse(deleteNthLastElements(num)(reverse(array)));
@@ -55,8 +55,8 @@ const makeSubArray = array => (
   firstIndex = 0,
   lastIndex = getLargerIndex(array),
 ) => deleteNthFirstElements(firstIndex - getLowerIndex(array))(
-    deleteNthLastElements(getLargerIndex(array) - lastIndex)(array),
-  );
+  deleteNthLastElements(getLargerIndex(array) - lastIndex)(array),
+);
 
 const affectAtIndex = index => value => array => dico.addMember(index, value)(deleteByIndex(index)(array));
 
