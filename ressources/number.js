@@ -17,6 +17,7 @@ const multiply = compose;
 const power = x => p => p(multiply(x))(one);
 const subtract = num1 => num2 => num2(pred)(num1);
 
+
 const isLessOrEqual = num1 => num2 => isZero(subtract(num1)(num2));
 const isEqual = num1 => num2 => boolean.and(isLessOrEqual(num1)(num2))(isLessOrEqual(num2)(num1));
 const isGreater = num1 => num2 => boolean.not(isLessOrEqual(num1)(num2));
@@ -26,6 +27,12 @@ const isLess = num1 => num2 => boolean.and(
 )(
   boolean.not(isEqual(num1)(num2)),
 );
+
+// TODO: fix this
+const divide = num1 => num2 => (inc) => {
+  console.log('num1', toJsNum(num1), 'num2', toJsNum(num2));
+  return isGreaterOrEqual(num1)(num2)(divide(subtract(num1)(num2))(num2)(succ(inc)))(inc);
+};
 
 const one = f => x => f(x);
 const two = succ(one);
@@ -42,5 +49,6 @@ const thousand = power(ten)(two);
 
 // for testing pupose
 const toJsNum = num => num(acc => acc + 1)(0);
-const myJsBool = boolean.toJsBool(isEqual(three)(three));
-console.log(myJsBool);
+const myJsNumber = divide(three)(one)(zero);
+console.log(toJsNum(myJsNumber));
+// console.log(toJsNum(subtract(four)(five)));
